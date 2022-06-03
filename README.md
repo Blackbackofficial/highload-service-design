@@ -151,25 +151,25 @@ Download new data from the repository
 
 7. Adding a comment
 
-| Method | Transfered over network, Kб | RPS             | Traffic   |
+| Method | Transfered over network, Kb | RPS             | Traffic   |
 |--------|-----------------------------|-----------------|-----------|
 | POST   | 18,9                        | 2 * r = `694,4` | 12,8 Mb/s |
 
 8. Receiving comments
 
-| Method | Transfered over network, Kб | RPS             | Traffic   |
+| Method | Transfered over network, Kb | RPS             | Traffic   |
 |--------|-----------------------------|-----------------|-----------|
 | GET    | 95,5                        | 2 * r = `694,4` | 64,8 Mb/s |
 
 9. Create a Pull Request
 
-| Method | Transfered over network, Kб | RPS            | Traffic    |
+| Method | Transfered over network, Kb | RPS            | Traffic    |
 |--------|-----------------------------|----------------|------------|
 | POST   | 3,4                         | r / 7 = `49,6` | 168,6 Kb/s |
 
 10. Receiving a pull request
 
-| Method | Transfered over network, Kб | RPS          | Traffic   |
+| Method | Transfered over network, Kb | RPS          | Traffic   |
 |--------|-----------------------------|--------------|-----------|
 | GET    | 46,6                        | r  = `347,2` | 15,8 Mb/s |
 
@@ -214,7 +214,7 @@ Download new data from the repository
 | Repositories   | (8 + 8 + 256 + 4) bytes * 330,000,000 repositories             | 84,8 Gb       |
 | Pull Requests  | (8 + 8 + 8 + 4) bytes * 30,000,000 people * 48 times a year    | 37,5 Gb/year  |
 | Issues         | (8 + 8 + 8 + 256) bytes * 30,000,000 people * 24 times a year  | 187,7 Gb/year |
-| Comments (все) | (8 + 8 + 8 + 256) bytes * 30,000,000 people * 730 times a year | 5,5 Gb/year   |
+| Comments (all) | (8 + 8 + 8 + 256) bytes * 30,000,000 people * 730 times a year | 5,5 Gb/year   |
 
 #### MinIO
 | Table     | Value                            | Total |
@@ -227,9 +227,9 @@ Download new data from the repository
 | Avatars | 80,000,000 people * 0,6 * 0.5 Kb | 24 Gb |
 
 #### Redis
-| Table    | Value                                  | Total   |
-|----------|----------------------------------------|---------|
-| Sessions | 30 000 000 человек * (8 + 64 + 8) байт | 2,25 Gb |
+| Table    | Value                                 | Total   |
+|----------|---------------------------------------|---------|
+| Sessions | 30 000 000 people * (8 + 64 + 8) byte | 2,25 Gb |
 
 ## Technology
 ### Client
@@ -248,19 +248,19 @@ Download new data from the repository
 - The main language in microservices will be `Golang`, as it supports parallelism out of the box and is very fast, productive. The only problem with `Golang` is the presence of `garbage collector`, which can affect performance. In the future, you can think about transferring the most loaded services to `Rust`.
 - Functional distribution of services:
     - `git-auth` - authorization service. Works with `Redis`
-      | Сервис     | RPS         | Traffic         |
+      | Service    | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
       | `git-auth` | 8472        | 1,32 Mb/s      |
     - `git-core` - service for working with users + the main service through which interaction with other microservices takes place
-      | Сервис     | RPS         | Traffic         |
+      | Service    | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
       | `git-core` | 31205       | 1,68 Gb/s      |
     - `git-meta` - a service that works with PostgreSQL and basic features not related to git flow (PRs, Issues, etc.)
-      | Сервис     | RPS         | Traffic         |
+      | Service    | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
       | `git-meta` | 14266       | 98 Mb/s        |
     - `git-pack` - service that works with `packfiles`
-      | Сервис     | RPS         | Traffic         |
+      | Service    | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
       | `git-pack` | 8472        | 1,38 Gb/s      |
 - For monitoring we will use `prometheus/grafana`
@@ -341,36 +341,36 @@ The calculated size of the photos turned out to be small ~ 24 Gb. Therefore, two
 #### Redis
 The average session storage size that was calculated earlier = 2.25 Gb. Average number of RPS ~ 8500. 8 processor cores are enough for this. For access speed, we will divide it into two shards.
 
-| Region   | Instance                    | RAM   | CPU     | Storage    |
-|----------|-----------------------------|-------|---------|------------|
-| American | 2 шарда + 2 реплики на шард | 32 Gb | 8 cores | 64 Gb NVMe |
-| European | 2 шарда + 2 реплики на шард | 32 Gb | 8 cores | 64 Gb NVMe |
+| Region   | Instance                        | RAM   | CPU     | Storage    |
+|----------|---------------------------------|-------|---------|------------|
+| American | 2 shards + 2 replicas per shard | 32 Gb | 8 cores | 64 Gb NVMe |
+| European | 2 shards + 2 replicas per shard | 32 Gb | 8 cores | 64 Gb NVMe |
 
 #### Nginx (L7 balancer)
-Так как фронтенд будет раздаваться с CDN, будет достаточно 64 ГБ NVMe. Для скорости доступа расположим nginx в каждом регионе.
+Since the frontend will be distributed from a CDN, 64 GB of NVMe will be enough. For access speed, we will locate nginx in each region.
 
-| Region   | Instance                      | RAM   | CPU      | Storage    |
-|----------|-------------------------------|-------|----------|------------|
-| American | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
-| European | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
-| African  | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
-| Asiatic  | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+| Region   | Instance                | RAM   | CPU      | Storage    |
+|----------|-------------------------|-------|----------|------------|
+| American | 3 main + 3 additional   | 32 Gb | 24 cores | 64 Gb NVMe |
+| European | 3 main + 3 additional   | 32 Gb | 24 cores | 64 Gb NVMe |
+| African  | 3 main + 3 additional   | 32 Gb | 24 cores | 64 Gb NVMe |
+| Asiatic  | 3 3 main + 3 additional | 32 Gb | 24 cores | 64 Gb NVMe |
 
 #### L4 Postgres balancer
 Let's place the balancers in the same regions as the Postgres servers themselves.
 
-| Region   | Instance                      | RAM   | CPU      | Storage    |
-|----------|-------------------------------|-------|----------|------------|
-| American | 1 основных + 2 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
-| European | 1 основных + 2 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+| Region   | Instance              | RAM   | CPU      | Storage    |
+|----------|-----------------------|-------|----------|------------|
+| American | 1 main + 2 additional | 32 Gb | 24 cores | 64 Gb NVMe |
+| European | 1 main + 2 additional | 32 Gb | 24 cores | 64 Gb NVMe |
 
 #### L4 Redis balancer
 Since the number of RPS for Redis is almost 2 times less than for Postgres, we can reduce the number of cores to 16.
 
-| Region   | Instance                      | RAM   | CPU      | Storage    |
-|----------|-------------------------------|-------|----------|------------|
-| American | 1 основных + 2 дополнительных | 32 Gb | 16 cores | 64 Gb NVMe |
-| European | 1 основных + 2 дополнительных | 32 Gb | 16 cores | 64 Gb NVMe |
+| Region   | Instance              | RAM   | CPU      | Storage    |
+|----------|-----------------------|-------|----------|------------|
+| American | 1 main + 2 additional | 32 Gb | 16 cores | 64 Gb NVMe |
+| European | 1 main + 2 additional | 32 Gb | 16 cores | 64 Gb NVMe |
 
 ## Sources
 - https://octoverse.github.com/
