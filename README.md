@@ -1,351 +1,378 @@
-# TP_HighLoad_Github
-## 1. Тема и целевая аудитори
-### Тема
+#highload github
+## 1. Topic and target audience
+### Topic
 GitHub
-Тип сервиса: система контроля версий(VCS)
-### Функционал MVP
-- Флоу Авторизации
-- Работа с репозиторием (создание/хранение/скачивание/внесение изменений)
-- Работа с Pull Request (создание/получение)
-- Работа с Issues (создание/получение)
-- Работа с комментариями в пулл реквестах и ищьюсах (создание/получение)
+Service Type: Version Control System (VCS)
+### MVP functionality
+- Authorization flow
+- Work with the repository (create / store / download / make changes)
+- Working with Pull Request (creating/receiving)
+- Work with Issues (create / receive)
+- Working with comments in pull requests and searches (create/receive)
 
-### Целевая аудитория
-- По информации из официальныз отчетов возьмем `80+ million`
-- Ежедневные активные пользователи `24 million`
-- Количество репозиториев `>330 million`(Возьмем, что из этого количества. На ноябрь 2018 в Github было создано 100m репозиториев. С учетом, что суммарно за период 2018-2020 годы количество репозиториев выросло еще на 100m (2019 - +40m; 2020 - +60m, 2021 - +70m), возьмем, что в данный момент `количество репозиториев = 330+ миллионов`)
+### The target audience
+- According to information from official reports, we will take `80+ million`
+- Daily active users `24 million`
+- The number of repositories `> 330 million` (Let's take one of this number. As of November 2018, 100m repositories were created in Github. Taking into account that in total for the period 2018-2020 the number of repositories increased by another 100m (2019 - + 40m; 2020 - +60m, 2021 - +70m), assume that at the moment `number of repositories = 330+ million`)
 
-#### Географическое распределение
-- Северная Америка - 35%
-- Азия - 30%
-- Европа - 25%
-- Остальной - 10%
+#### Geographic distribution
+- North America - 35%
+- Asia - 30%
+- Europe - 25%
+- The rest - 10%
 
-## 2. Расчёт нагрузки
-### Продуктовые метрики
-По данным на 2021 год ежемесечное количество пользователей - 32m человек. На то время а количество пользователей было примерно 73m.
-Тогда при нынешней аудитории в 80m+ человек предположим, что `ежемесечное количество пользователей = 600m.`
-А `ежедневное количество активных юзеров` возьмем равным `~30+ миллионов человек`.
+## 2. Load calculation
+### Product metrics
+As of 2021, the monthly number of users is 32m people. At that time, the number of users was approximately 73m.
+Then with the current audience of 80m+ people, let's assume that `monthly number of users = 600m.`
+And let's take `daily number of active users` equal to `~30+ million people`.
 
-Предположим, что в среднем у одного пользователя ~5 репозиториев. Репозитории привышающие по размеру 50Мб встречаются редко, поэтому возьмем, что в среднем максимальный размер репозитория равен ~40Мб, причем у одного пользователя такий репозиториев не больше одного. Оставшиеся репозитории имеют размер не привышающий ~2МБ.
-Тогда средний `размер одного репозитория возьмем равным 9.6 Мб`
+Let's assume that on average one user has ~5 repositories. Repositories exceeding 50Mb in size are rare, so let's assume that the average maximum repository size is ~40Mb, and one user has no more than one such repositories. The remaining repositories have a size not exceeding ~2MB.
+Then we take the average `size of one repository equal to 9.6 Mb`
 
-К тому же в одном репозитории есть примерно:
-- `5 Pull Request ~ 100 Байт`\
-  Из 80+m пользователей 70% создает Pull Request'ы на 50% существующих репозиториев. Из личного опыта коллег и моего решил взять, что один пользователь создает 1 Pull Request в неделю. Тогда (80 * 1000000 * 0,7 * 48) / (250 * 1000000 * 0,5) = 5,3 ~ 5
-- `4 Issues ~ 512 Байт (Размер текста одного issue ~ 128 Байт)`\
-  Из 80+m пользователей 30% создает Issues'ы на 50% существующих репозиториев. Из личного опыта коллег и моего решил взять, что один пользователь создает 2 Issues в месяц. Тогда (80 * 1000000 * 0,3 * 24) / (250 * 1000000 * 0,5) = 4.2 ~ 4 
-- `10 комментариев к Pull Request'ам и issues'ам ~ 650 Байт` (Возьмём среднюю длину комментария в 65 символов)
+In addition, in one repository there is approximately:
+- `5 Pull Request ~ 100 Bytes`\
+  Out of 80+m users, 70% create Pull Requests for 50% of existing repositories. From the personal experience of colleagues and mine, I decided to take that one user creates 1 Pull Request per week. Then (80 * 1000000 * 0.7 * 48) / (250 * 1000000 * 0.5) = 5.3 ~ 5
+- `4 Issues ~ 512 Bytes (Text size of one issue ~ 128 Bytes)`\
+  Out of 80+m users, 30% create Issues on 50% of the existing repositories. From the personal experience of colleagues and mine, I decided to take that one user creates 2 Issues per month. Then (80 * 1000000 * 0.3 * 24) / (250 * 1000000 * 0.5) = 4.2 ~ 4
+- `10 comments to Pull Requests and issues'am ~ 650 Bytes` (Let's take an average comment length of 65 characters)
 
-Также положим, что 60% пользователей имеют аватарку в профиле и ее размер ~0.5Мб.
+Let's also assume that 60% of users have an avatar in their profile and its size is ~0.5Mb.
 
-Тогда получается, что `Средний размер хранилища пользователя = ~50.5 МБ`
+Then it turns out that `Average user storage size = ~ 50.5 MB`
 
-#### Среднее количество действий пользователя по типам за период.
+#### Average number of user actions by type for the period.
 
-| Вид действия                                                 | Количество/Период |
-| ------------------------------------------------------------ | ----------------- |
-| Создание репозитория                                         |     2 в месяц     |
-| Скачивание репозитория (git clone)                           |     4 в месяц     |
-| Скачать новые данные из репозитория (git pull)               |     3 в день      |
-| Добавление изменений в репозиторий (git commit/git push)     |     5 в день      |
-| Создание issue                                               |     2 в месяц     |
-| Получение issue                                              |     1 в неделю    |
-| Добавление комментария                                       |     2 в день      |
-| Получение комментариев                                       |     2 в день      |
-| Создание Pull Request                                        |     1 в неделю    |
-| Получение Pull request                                       |     1 в день      |
+| Action type                                            | Quantity/Period |
+|--------------------------------------------------------|-----------------|
+| Creating a repository                                  | 2 per month     |
+| Downloading a repository (git clone)                   | 4 per month     |
+| Download new data from the repository (git pull)       | 3 per day       |
+| Adding changes to the repository (git commit/git push) | 5 per day       |
+| Create an issue                                        | 2 per month     |
+| Getting an issue                                       | 1 per week      |
+| Adding a comment                                       | 2 per day       |
+| Receiving comments                                     | 2 per day       |
+| Creating a Pull Request                                | 1 per week      |
+| Receiving a pull request                               | 1 per day       |
 
 
-### Технические метрики
-#### Размер хранения в разбивке по типам данных
-1. Репозиториии = 330 000 000 * 9,6 Мб = 3021,24 Тб
-2. Issues = 330 000 000 * 4 * 128 Байт = 168,9 Гб
-3. Комментарии = 330 000 000 * 10 * 65 Байт = 214,5 Гб
-4. Pull Requests = 330 000 000 * 5 * 20 Байт = 33 Гб
-5. Фотографии пользователей = 80 000 000 * 0,6 * 0.5 Кб = 24 Гб
+### Technical metrics
+#### Storage size by data type
+1. Repositories = 330,000,000 * 9.6 MB = 3021.24 TB
+2. Issues = 330,000,000 * 4 * 128 Bytes = 168.9 GB
+3. Comments = 330,000,000 * 10 * 65 Bytes = 214.5 GB
+4. Pull Requests = 330,000,000 * 5 * 20 Bytes = 33 GB
+5. User photos = 80,000,000 * 0.6 * 0.5 Kb = 24 GB
 
-#### Сетевой трафик и RPS
+#### Network traffic and RPS
 ```
-Коэффициент перевода действий пользователя за период в RPS:
-r = 32 000 000 / 24 * 60 * 60 = 370,37 людей/сек
+The coefficient of conversion of user actions for the period in RPS:
+r = 32,000,000 / 24 * 60 * 60 = 370.37 people/sec
 ```
 
-1. Создание репозитория
+1. Create a repository
 
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| POST   | 3,9                         | 2 * r / 30 = `23,1`    | 90,1 Kб/с    |
+| Method | Transfered over network, Kb | RPS                 | Traffic   |
+|--------|-----------------------------|---------------------|-----------|
+| POST   | 3,9                         | 2 * r / 30 = `23,1` | 90,1 Kb/s |
 
-2. Скачивание репозитория (git clone)
+2. Downloading the repository (git clone)
 
-Проверка авторизации
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 0,16                        | 4 * r / 30 = `46,3`    | 7,4 Kб/с     |
+Authorization check
 
-Получение мета-данных
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 0,3                         | 4 * r / 30 = `46,3`    | 13,9 Kб/с    |
+| Method | Transfered over network, Kb | RPS                 | Traffic  |
+|--------|-----------------------------|---------------------|----------|
+| GET    | 0,16                        | 4 * r / 30 = `46,3` | 7,4 Kb/s |
 
-Скачивание репозитория
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 10240                       | 4 * r / 30 = `46,3`    | 463 Мб/с     |
+Getting Meta Data
 
-3. Скачать новые данные из репозитория (git pull)
+| Method | Transfered over network, Kb | RPS                 | Traffic   |
+|--------|-----------------------------|---------------------|-----------|
+| GET    | 0,3                         | 4 * r / 30 = `46,3` | 13,9 Kb/s |
 
-Проверка авторизации
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 0,16                        | 3 * r = `1041,6`       | 166,7 Kб/с   |
+Downloading the repository
 
-Получение мета-данных
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 0,3                         | 3 * r = `1041,6`       | 312,5 Kб/с   |
+| Method | Transfered over network, Kb | RPS                 | Traffic  |
+|--------|-----------------------------|---------------------|----------|
+| GET    | 10240                       | 4 * r / 30 = `46,3` | 463 Mb/s |
 
-Скачать новые данные из репозитория
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 3,3                         | 3 * r = `1041,6`       | 3,3 Мб/с     |
+3. Download new data from the repository (git pull)
 
-4. Добавление изменений в репозиторий (git commit/git push)
+Authorization check
 
-Проверка авторизации
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 0,16                        | 5 * r = `1736`         | 277,8 Kб/с   |
+| Method | Transfered over network, Kb | RPS              | Traffic    |
+|--------|-----------------------------|------------------|------------|
+| GET    | 0,16                        | 3 * r = `1041,6` | 166,7 Kb/s |
 
-Отправка мета-данных
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| POST   | 0,3                         | 5 * r = `1736`         | 520,8 Kб/с   |
+Getting Meta Data
 
-Скачать новые данные из репозитория
-| Метод  | Transfered over network, Кб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| POST   | 3,3                         | 5 * r = `1736`         | 5,6 Мб/с     |
+| Method | Transfered over network, Kb | RPS              | Traffic    |
+|--------|-----------------------------|------------------|------------|
+| GET    | 0,3                         | 3 * r = `1041,6` | 312,5 Kb/s |
 
-5. Создание issue
+Download new data from the repository
 
-| Метод  | Transfered over network, Kб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| POST   | 3,4                         | 2 * r / 30 = `23,1`    | 78,5 Kб/с    |
+| Method | Transfered over network, Kb | RPS              | Traffic  |
+|--------|-----------------------------|------------------|----------|
+| GET    | 3,3                         | 3 * r = `1041,6` | 3,3 Mb/s |
 
-6. Получение issues
+4. Adding changes to the repository (git commit/git push)
 
-| Метод  | Transfered over network, Kб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 36,4                        | 2 * r / 7 = `99,2`     | 3,5 Mб/с     |
+Authorization check
 
-7. Добавление комментария
+| Method | Transfered over network, Kb | RPS            | Traffic    |
+|--------|-----------------------------|----------------|------------|
+| GET    | 0,16                        | 5 * r = `1736` | 277,8 Kb/s |
 
-| Метод  | Transfered over network, Kб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| POST   | 18,9                        | 2 * r = `694,4`        | 12,8 Mб/с    |
+Sending Meta Data
 
-8. Получение комментариев
+| Method | Transfered over network, Kb | RPS            | Traffic    |
+|--------|-----------------------------|----------------|------------|
+| POST   | 0,3                         | 5 * r = `1736` | 520,8 Kb/s |
 
-| Метод  | Transfered over network, Kб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 95,5                        | 2 * r = `694,4`        | 64,8 Mб/с    |
+Download new data from the repository
 
-9. Создание Pull Request
+| Method | Transfered over network, Kb | RPS            | Traffic  |
+|--------|-----------------------------|----------------|----------|
+| POST   | 3,3                         | 5 * r = `1736` | 5,6 Mb/s |
 
-| Метод  | Transfered over network, Kб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| POST   | 3,4                         | r / 7 = `49,6`         | 168,6 Kб/с   |
+5. Create an issue
 
-10. Получение Pull request
+| Method | Transfered over network, Kb | RPS                 | Traffic   |
+|--------|-----------------------------|---------------------|-----------|
+| POST   | 3,4                         | 2 * r / 30 = `23,1` | 78,5 Kb/s |
 
-| Метод  | Transfered over network, Kб | RPS                    | Трафик       |
-| ------ | --------------------------- | ---------------------- | ------------ |
-| GET    | 46,6                        | r  = `347,2`           | 15,8 Мб/с    |
+6. Getting issues
 
-##### Итог
-| Вид действия                                                 | RPS               |  Трафик        |
-| ------------------------------------------------------------ | ----------------- | -------------- |
-| Проверка авторизации                                         |     2823,9        | 451,9 Кб/с     |
-| Получение мета-данных                                        |     1087,9        | 326,38 Кб/с    |
-| Отправка мета-данных                                         |     1736          | 520,8 Кб/с     |
-| Создание репозитория                                         |     23,1          | 90,1 Kб/с      |
-| Скачивание репозитория (git clone)                           |     46,3          | 463 Мб/с       |
-| Скачать новые данные из репозитория (git pull)               |     1041,6        | 3,3 Мб/с       |
-| Добавление изменений в репозиторий (git commit/git push)     |     1736          | 5,6 Мб/с       |
-| Создание issue                                               |     23,1          | 78,5 Kб/с      |
-| Получение issues                                             |     99,2          | 3,5 Mб/с       |
-| Добавление комментария                                       |     694,4         | 12,8 Mб/с      |
-| Получение комментариев                                       |     694,4         | 64,8 Mб/с      |
-| Создание Pull Request                                        |     49,6          | 168,6 Kб/с     |
-| Получение Pull request                                       |     347,2         | 15,8 Мб/с      |
-|                                                              |                   |                |
-| **Общие значения**                                           | `10401,7`         | `0,56 Гб/с`    |
-| **При пиковой нагрузке возьмем x3**                          | `31205,1`         | `1,68 Гб/с`    |
+| Method | Transfered over network, Kb | RPS                | Traffic  |
+|--------|-----------------------------|--------------------|----------|
+| GET    | 36,4                        | 2 * r / 7 = `99,2` | 3,5 Mb/s |
 
-## Базы данных
-### Логическая схема
+7. Adding a comment
+
+| Method | Transfered over network, Kб | RPS             | Traffic   |
+|--------|-----------------------------|-----------------|-----------|
+| POST   | 18,9                        | 2 * r = `694,4` | 12,8 Mb/s |
+
+8. Receiving comments
+
+| Method | Transfered over network, Kб | RPS             | Traffic   |
+|--------|-----------------------------|-----------------|-----------|
+| GET    | 95,5                        | 2 * r = `694,4` | 64,8 Mb/s |
+
+9. Create a Pull Request
+
+| Method | Transfered over network, Kб | RPS            | Traffic    |
+|--------|-----------------------------|----------------|------------|
+| POST   | 3,4                         | r / 7 = `49,6` | 168,6 Kb/s |
+
+10. Receiving a pull request
+
+| Method | Transfered over network, Kб | RPS          | Traffic   |
+|--------|-----------------------------|--------------|-----------|
+| GET    | 46,6                        | r  = `347,2` | 15,8 Mb/s |
+
+##### Total
+| Action type                                            | RPS       | Traffic     |
+|--------------------------------------------------------|-----------|-------------|
+| Authorization check                                    | 2823,9    | 451,9 Kb/s  |
+| Getting Meta Data                                      | 1087,9    | 326,38 Kb/s |
+| Sending Meta Data                                      | 1736      | 520,8 Kb/s  |
+| Creating a repository                                  | 23,1      | 90,1 Kb/s   |
+| Downloading a repository (git clone)                   | 46,3      | 463 Mb/s    |
+| Download new data from the repository (git pull)       | 1041,6    | 3,3 Mb/s    |
+| Adding changes to the repository (git commit/git push) | 1736      | 5,6 Mb/s    |
+| Create an issue                                        | 23,1      | 78,5 Kb/s   |
+| Getting issues                                         | 99,2      | 3,5 Mb/s    |
+| Adding a comment                                       | 694,4     | 12,8 Mb/s   |
+| Receiving comments                                     | 694,4     | 64,8 Mb/s   |
+| Creating a Pull Request                                | 49,6      | 168,6 Kb/s  |
+| Receiving a pull request                               | 347,2     | 15,8 Mb/s   |
+|                                                        |           |             |
+| **Total values**                                       | `10401,7` | `0,56 Gb/s` |
+| **At peak load, take x3**                              | `31205,1` | `1,68 Gb/s` |
+
+## Database
+### Logic diagram
 ![logical](/img/logical.png)
-### Физическая схема
+### Physical layout
 ![physical](/img/physical_new.png)
 
-### Шардирование
-- **PostgreSQL Repos** - шардирование по `user_id`
-- **PostgreSQL PRs** - шардирование по `(repo_id, pull_request_id)`
-- **PostgreSQL Issues** - шардирование по `(repo_id, issue_id)`
-- **MinIO** - шардирование по `repo_id`
-- **Ceph** - шардирование по `user_id`
+### Sharding
+- **PostgreSQL Repos** - sharding by `user_id`
+- **PostgreSQL PRs** - sharding by `(repo_id, pull_request_id)`
+- **PostgreSQL Issues** - sharding by `(repo_id, issue_id)`
+- **MinIO** - sharding by `repo_id`
+- **Ceph** - sharding by `user_id`
 
-### Рассчет размера
+### Size calculation
 #### PostgreSQL
-| Таблица       | Значение                                                    | Итог         |
-| ------------- |-------------------------------------------------------------|--------------|
-| Users         | (8 + 64 + 64 + 256) байт * 80 000 000 человек               | 31.4 Гб      |
-| Repositories  | (8 + 8 + 256 + 4) байт * 330 000 000 репозиториев           | 84,8 Гб      |
-| Pull Requests | (8 + 8 + 8 + 4) байт * 30 000 000 человек * 48 раз в год    | 37,5 Гб/год  |
-| Issues        | (8 + 8 + 8 + 256) байт * 30 000 000 человек * 24 раз в год  | 187,7 Гб/год |
-| Comments (все)| (8 + 8 + 8 + 256) байт * 30 000 000 человек * 730 раз в год | 5,5 Тб/год   |
+| Table          | Value                                                          | Total         |
+|----------------|----------------------------------------------------------------|---------------|
+| Users          | (8 + 64 + 64 + 256) bytes * 80,000,000 people                  | 31.4 Gb       |
+| Repositories   | (8 + 8 + 256 + 4) bytes * 330,000,000 repositories             | 84,8 Gb       |
+| Pull Requests  | (8 + 8 + 8 + 4) bytes * 30,000,000 people * 48 times a year    | 37,5 Gb/year  |
+| Issues         | (8 + 8 + 8 + 256) bytes * 30,000,000 people * 24 times a year  | 187,7 Gb/year |
+| Comments (все) | (8 + 8 + 8 + 256) bytes * 30,000,000 people * 730 times a year | 5,5 Gb/year   |
 
 #### MinIO
-| Таблица       | Значение                         | Итог |
-| ------------- |----------------------------------|------|
-| Packfiles     | 10 Mb * 300 000 000 репозиториев | 3 Пб |
+| Table     | Value                            | Total |
+|-----------|----------------------------------|-------|
+| Packfiles | 10 Mb * 300,000,000 repositories | 3 Pb  |
 
 #### Ceph
-| Таблица       | Значение                                                     | Итог         |
-| ------------- |--------------------------------------------------------------|--------------|
-| Аватарки      | 80 000 000 человек * 0,6 * 0.5 Кб                            | 24 Гб        |
+| Table   | Value                            | Total |
+|---------|----------------------------------|-------|
+| Avatars | 80,000,000 people * 0,6 * 0.5 Kb | 24 Gb |
 
 #### Redis
-| Таблица       | Значение                                                     | Итог         |
-| ------------- | ------------------------------------------------------------ | ------------ |
-| Sessions      | 30 000 000 человек * (8 + 64 + 8) байт                       | 2,25 Гб      |
+| Table    | Value                                  | Total   |
+|----------|----------------------------------------|---------|
+| Sessions | 30 000 000 человек * (8 + 64 + 8) байт | 2,25 Gb |
 
-## Технологии
-### Клиент
-- В выборе технологий для фронта будем отталкиватся от знаний разработчиков в нашей команде.
-- Для раздачи фронтенда будем использовать `CDN` для уменьшения задержки.
-- Для разрешения доменных имён (domain name resolving) возьмем высокодоступный DNS сервис, к примеру `Amazon Route 53`
-- Также для фильтрации трафика и предотвращения высоких нагрузок и DDoS атак добавим еще сервис-firewall `CloudFlare`
+## Technology
+### Client
+- In choosing technologies for the front, we will build on the knowledge of the developers in our team.
+- To distribute the frontend, we will use `CDN` to reduce the delay.
+- To resolve domain names (domain name resolving) take a highly available DNS service, for example `Amazon Route 53`
+- Also, to filter traffic and prevent high loads and DDoS attacks, we will add another service-firewall `CloudFlare`
 
-### Балансировка
-- Вместо RoundRobin балансировки, будем использовать Geo-DNS-балансировку. Это позволит обеспечить наименьший latency для пользователей из разных регионов + пользователи могут сбалансировать на удаленные сервера только при отказе обоих ЦОД’ов в ближайшем регионе.
-- Для балансировки на уровне Nginx будем использовать L7 балансировку
-- Для балансировки между репликами БД будем использовать L4 балансировку
+### Balancing
+- Instead of RoundRobin balancing, we will use Geo-DNS balancing. This will ensure the lowest latency for users from different regions + users can balance to remote servers only if both data centers fail in the nearest region.
+- For balancing at the Nginx level, we will use L7 balancing
+- To balance between database replicas, we will use L4 balancing
 
-### Серверная часть
-- Будем использовать микросервисную архитектуру, которая позволит легко масштабироваться, а также контролировать нагрузку на сервисы.
-- Основным языком в микросервисах будет `Golang`, так как он поддерживает параллелизм из коробки и является очень быстрым, производительным. Единственная проблема `Golang` это наличие `garbage collector`, которое может сказаться на производительности. В будущем можно задуматься о переводе самых нагруженных сервисов на `Rust`.
-- Функциональное распределение сервисов:
-    - `git-auth` - сервис авторизации. Работает с `Redis`
-      | Сервис     | RPS         | Трафик         |
+### Server side
+- We will use a microservice architecture that will allow easy scaling, as well as control the load on services.
+- The main language in microservices will be `Golang`, as it supports parallelism out of the box and is very fast, productive. The only problem with `Golang` is the presence of `garbage collector`, which can affect performance. In the future, you can think about transferring the most loaded services to `Rust`.
+- Functional distribution of services:
+    - `git-auth` - authorization service. Works with `Redis`
+      | Сервис     | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
-      | `git-auth` | 8472        | 1,32 Мб/с      |
-    - `git-core` - сервис для работы с пользователями + основной сервис, через который идет взаимодествие с другими микросервисами
-      | Сервис     | RPS         | Трафик         |
+      | `git-auth` | 8472        | 1,32 Mb/s      |
+    - `git-core` - service for working with users + the main service through which interaction with other microservices takes place
+      | Сервис     | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
-      | `git-core` | 31205       | 1,68 Гб/с      |
-    - `git-meta` - сервис, которы работает с PostgreSQL и основными фишками, несвязанными с флоу git (PRs, Issues, etc.)
-      | Сервис     | RPS         | Трафик         |
+      | `git-core` | 31205       | 1,68 Gb/s      |
+    - `git-meta` - a service that works with PostgreSQL and basic features not related to git flow (PRs, Issues, etc.)
+      | Сервис     | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
-      | `git-meta` | 14266       | 98 Мб/с        |
-    - `git-pack` - сервис, который работает с `packfiles`
-      | Сервис     | RPS         | Трафик         |
+      | `git-meta` | 14266       | 98 Mb/s        |
+    - `git-pack` - service that works with `packfiles`
+      | Сервис     | RPS         | Traffic         |
       | ---------- | ----------- | -------------- |
-      | `git-pack` | 8472        | 1,38 Гб/с      |
-- Для мониторинга будем использовать `prometheus/grafana`
-- Для управления трафиком (таймауты, повторные попытки, балансировка нагрузки) и обеспечения отказоустойчивости при общении между сервисами будем использовать `istio` в кластере k8s
-### Хранилища
-- Для хранения большинства данных будем использовать реляционную СУБД PostgreSQL, она обладает высокой надежностью и ее будет достаточно для создания новых в ней данных
-- Для ускорения записи применим шардирование, чтобы выдерживать нагрузку на запись
-- Кроме того для хранения объектов (packfiles и аватарок) будем использовать объектные хранилища: Ceph для аватарок и MinIO для packfiles
-- Ceph - бесплатная распределенная файловая система с открытым исходным кодом, лишенная узких мест и единых точек отказа, которая представляет из себя легко масштабируемый кластер узлов
-- MinIO также объектное хранилище, но имеет ряд приемуществ, к примеру совместимость с Amazon S3 API и размером хранимых данных до 5 ТБ. К тому же этот инструмент используется GitLab'ом. К сожалению, это хранилище платное, поэтому было решено для аватарок использовать бесплатное решение.
-- Для репликации в Postgres будем использовать `patroni`
-- Для хранения пользовательских сессий будем использовать `Redis`
+      | `git-pack` | 8472        | 1,38 Gb/s      |
+- For monitoring we will use `prometheus/grafana`
+- To manage traffic (timeouts, retries, load balancing) and ensure fault tolerance when communicating between services, we will use `istio` in the k8s cluster
+### Repositories
+- To store most of the data, we will use the PostgreSQL relational DBMS, it is highly reliable and will be enough to create new data in it
+- To speed up the write, apply sharding to withstand the write load
+- In addition, to store objects (packfiles and avatars), we will use object storage: Ceph for avatars and MinIO for packfiles
+- Ceph - free open source distributed file system, devoid of bottlenecks and single points of failure, which is an easily scalable cluster of nodes
+- MinIO is also object storage, but has a number of advantages, such as compatibility with the Amazon S3 API and the size of the stored data up to 5 TB. In addition, this tool is used by GitLab. Unfortunately, this storage is paid, so it was decided to use a free solution for avatars.
+- For replication in Postgres we will use `patroni`
+- We will use `Redis` to store user sessions
 
-## Архитектура
+## Architecture
 ![arch](/img/arch.jpg)
-## Сервера
-### Расположение
-С учетом географического распределения аудитории сервера расположим так:
+## Servers
+### Location
+Taking into account the geographical distribution of the server audience, we will arrange it as follows:
 ![regions](/img/regions.jpeg)
 
-### Подбор конфигураций
-Все рассчеты сделаны для одного ЦОД'а. Для обеспечения отказоустойчивости в каждом регионе будет по 2 ЦОД'а - основной и резервный.
-#### k8s
-Так как мы предоставляем Kubernetes кластер узлов, который он может использовать для запуска контейнерных задач и указываете, сколько ЦП и памяти (ОЗУ) требуется каждому контейнеру, Kubernetes может разместить контейнеры на узлах так, чтобы наиболее эффективно использовать ресурсы.
-Поэтому укажим общее количество ресурсов, которое мы предоставим Kubernetes. Для сервисов необходимо достаточно большого размер ОЗУ для кэшей и  обеспечения скорости работы приложений и уровеня доступности ресурсов для них, и CPU c большим количеством ядер для повышения производительности.
-Согласно таблице в документации etcd на сайте [CoreOS](https://coreos.com/etcd/docs/latest/v2/admin_guide.html), рекомендуется иметь нечетное число членов в кластере. Для того, чтобы кластер продолжал работать после выхода из строя одной мастер-ноды, возьмем 3.
-##### Немного про кешы
-Cудя по RPS, самые часто получаемые данные это данные репозитория + PR. В кешах будем хранить, к примеру, аватарки + данные репозиториев, потому что они будут реже всего обновлятся. В качестве стратегии кеширования я бы выбрал SNLRU или 2Q. Грубо говоря с разделением на горячий/теплый/холодный кешы. Теплые и холодные кеши сами инвалидируются (например, при фиксированном размере очереди в 2Q редко используемые вылетают). Горячие кеши репозиториев можем инвалидировать при событиях(к примеру, git push - меняется структура файлов в репозитории-обновили кеш).
+### Selection of configurations
+All calculations are made for one data center. To ensure fault tolerance in each region there will be 2 data centers - the main and the backup.
+####k8s
+Since we provide Kubernetes with a cluster of nodes that it can use to run containerized tasks and specify how much CPU and memory (RAM) each container needs, Kubernetes can place containers on nodes in a way that makes the most efficient use of resources.
+Therefore, we will indicate the total number of resources that we will provide Kubernetes. Services require large enough RAM for caches and application speed and resource availability, and a CPU with more cores to improve performance.
+According to the table in the etcd documentation on the [CoreOS] website(https://coreos.com/etcd/docs/latest/v2/admin_guide.html), it is recommended to have an odd number of members in the cluster. In order for the cluster to continue working after the failure of one master node, we take 3.
+##### A bit about caches
+Judging by the RPS, the most frequently received data is the data of the repository + PR. We will store, for example, avatars + repositories data in caches, because they will be updated the least often. As a caching strategy, I would choose SNLRU or 2Q. Roughly speaking, with a division into hot / warm / cold caches. Warm and cold caches are invalidated by themselves (for example, with a fixed queue size of 2Q, rarely used caches crash). Hot caches of repositories can be invalidated by events (for example, git push - the structure of files in the repository changes - the cache has been updated).
 
-| Регион       | Instance                      | RAM         | CPU         | Storage         |
-| ------------ | ----------------------------- | ----------- | ----------- | --------------- |
-| Американский |  5 nodes     | 256 Гб      |  64 cores   | 256 Гб NVMe     |
-| Европейский  |  5 nodes     | 256 Гб      |  64 cores   | 256 Гб NVMe     |
-| Африканский  |  5 nodes     | 256 Гб      |  64 cores   | 256 Гб NVMe     |
-| Азиатский    |  5 nodes     | 256 Гб      |  64 cores   | 256 Гб NVMe     |
+| Region   | Instance | RAM    | CPU      | Storage     |
+|----------|----------|--------|----------|-------------|
+| American | 5 nodes  | 256 Gb | 64 cores | 256 Gb NVMe |
+| European | 5 nodes  | 256 Gb | 64 cores | 256 Gb NVMe |
+| African  | 5 nodes  | 256 Gb | 64 cores | 256 Gb NVMe |
+| Asiatic  | 5 nodes  | 256 Gb | 64 cores | 256 Gb NVMe |
+
 #### PostgreSQL Repos
-Размер хранимых данных Users + Repos ~ 90 Гб. К этим таблицам довольно большое кол-во RPS, повысим скорость доступа через большое кол-во шардов и увеличенное количество ядер. Возьмем также 96 Гб ОЗУ для кеширования.
-| Регион       | Instance                                  | RAM         | CPU         | Storage                    |
-| ------------ | ----------------------------------------- | ----------- | ----------- | -------------------------- |
-| Американский | 5 шардов + 2 реплики (sync+async) на шард | 96 Гб       |  64 cores   | 2 NVMe x 2 TB RAID 10      |
-| Европейский  | 5 шардов + 2 реплики (sync+async) на шард | 96 Гб       |  64 cores   | 2 NVMe x 2 TB RAID 10      |
+The size of the stored data Users + Repos ~ 90 Gb. These tables have a fairly large number of RPS, we will increase the access speed through a large number of shards and an increased number of cores. Let's also take 96 Gb of RAM for caching.
+
+| Region   | Instance                                     | RAM   | CPU      | Storage               |
+|----------|----------------------------------------------|-------|----------|-----------------------|
+| American | 5 shards + 2 replicas (sync+async) per shard | 96 Gb | 64 cores | 2 NVMe x 2 TB RAID 10 |
+| European | 5 shards + 2 replicas (sync+async) per shard | 96 Gb | 64 cores | 2 NVMe x 2 TB RAID 10 |
+
 #### PostgreSQL PRs
-Размер хранимых данных PRs + PRs Comments(половина от всех) ~ 2,9 Tб. К этим таблицам RPS небольшое поэтому оставим 2 шарда. Из-за большого размера возьмем 8 NVMe x 2 TB
-| Регион       | Instance                                  | RAM         | CPU         | Storage                    |
-| ------------ | ----------------------------------------- | ----------- | ----------- | -------------------------- |
-| Американский | 2 шардов + 2 реплики (sync+async) на шард | 96 Гб       |  64 cores   | 8 NVMe x 2 TB RAID 10      |
-| Европейский  | 2 шардов + 2 реплики (sync+async) на шард | 96 Гб       |  64 cores   | 8 NVMe x 2 TB RAID 10      |
+The size of the stored data PRs + PRs Comments (half of all) ~ 2.9 TB. RPS for these tables is small, so we will leave 2 shards. Due to the large size, we will take 8 NVMe x 2 TB
+
+| Region   | Instance                                     | RAM   | CPU      | Storage               |
+|----------|----------------------------------------------|-------|----------|-----------------------|
+| American | 2 shards + 2 replicas (sync+async) per shard | 96 Gb | 64 cores | 8 NVMe x 2 TB RAID 10 |
+| European | 2 shards + 2 replicas (sync+async) per shard | 96 Gb | 64 cores | 8 NVMe x 2 TB RAID 10 |
+
 #### PostgreSQL Issues
-Размер хранимых данных PRs + PRs Comments(половина от всех) ~ 3 Tб. Настроим также как и с PRs
-| Регион       | Instance                                  | RAM         | CPU         | Storage                    |
-| ------------ | ----------------------------------------- | ----------- | ----------- | -------------------------- |
-| Американский | 2 шардов + 2 реплики (sync+async) на шард | 96 Гб       |  64 cores   | 8 NVMe x 2 TB RAID 10      |
-| Европейский  | 2 шардов + 2 реплики (sync+async) на шард | 96 Гб       |  64 cores   | 8 NVMe x 2 TB RAID 10      |
+The size of the stored data PRs + PRs Comments (half of all) ~ 3 TB. Set up the same way as with PRs
+
+| Region   | Instance                                     | RAM   | CPU      | Storage               |
+|----------|----------------------------------------------|-------|----------|-----------------------|
+| American | 2 shards + 2 replicas (sync+async) per shard | 96 Gb | 64 cores | 8 NVMe x 2 TB RAID 10 |
+| European | 2 shards + 2 replicas (sync+async) per shard | 96 Gb | 64 cores | 8 NVMe x 2 TB RAID 10 |
+
 #### MinIO
-По [рекомендациям настройки MinIO](https://min.io/resources/docs/CPG-MinIO-implementation-guide.pdf) и из [результатов бенчмарка MinIO](https://blog.min.io/scaling-minio-more-hardware-for-higher-scale/) можем сделать вывод, что для наших целей подойдет использование конфигурации из 32 узлов с 8 HDD кластерами, каждый из которых содержит 4 ТБ HDD. Возьмем 12 машин обеспечения x2 размера хранения по сравнению с имеющимися.
-| Регион       | Instance         | RAM         | CPU         | Storage                          |
-| ------------ | ---------------- | ----------- | ----------- | -------------------------------- |
-| Американский | 12               | 96 Гб       | 24 cores    | 24 nodes x 8 NVMe x 4 TB RAID 10 |
-| Европейский  | 12               | 96 Гб       | 24 cores    | 24 nodes x 8 NVMe x 4 TB RAID 10 |
-| Африканский  | 12               | 96 Гб       | 24 cores    | 24 nodes x 8 NVMe x 4 TB RAID 10 |
-| Азиатский    | 12               | 96 Гб       | 24 cores    | 24 nodes x 8 NVMe x 4 TB RAID 10 |
+According to [MinIO tuning guidelines](https://min.io/resources/docs/CPG-MinIO-implementation-guide.pdf) and from [MinIO benchmark results](https://blog.min.io/scaling-minio -more-hardware-for-higher-scale/) we can conclude that for our purposes, a configuration of 32 nodes with 8 HDD clusters, each containing 4 TB HDDs, is suitable. Let's take 12 machines providing x2 storage size compared to the available ones.
+
+| Region   | Instance | RAM   | CPU      | Storage                          |
+|----------|----------|-------|----------|----------------------------------|
+| American | 12       | 96 Gb | 24 cores | 24 nodes x 8 NVMe x 4 TB RAID 10 |
+| European | 12       | 96 Gb | 24 cores | 24 nodes x 8 NVMe x 4 TB RAID 10 |
+| African  | 12       | 96 Gb | 24 cores | 24 nodes x 8 NVMe x 4 TB RAID 10 |
+| Asiatic  | 12       | 96 Gb | 24 cores | 24 nodes x 8 NVMe x 4 TB RAID 10 |
+
 #### Ceph
-Рассчитанный размер фотографий получился небольшим ~24 Гб. Поэтому будет достаточно двух машин с 2 NVMe x 2 TB
-| Регион       | Instance         | RAM         | CPU         | Storage         |
-| ------------ | ---------------- | ----------- | ----------- | --------------- |
-| Американский | 2                | 96 Гб       | 24 cores    | 2 NVMe x 2 TB   |
+The calculated size of the photos turned out to be small ~ 24 Gb. Therefore, two machines with 2 NVMe x 2 TB will be enough
+
+| Region   | Instance | RAM   | CPU      | Storage       |
+|----------|----------|-------|----------|---------------|
+| American | 2        | 96 Gb | 24 cores | 2 NVMe x 2 TB |
+
 #### Redis
-Средний размер хранилища сессий, который был расчитан ранее = 2,25 Гб. Среднее кол-во RPS ~ 8500. Для этого хватит достаточно 8 ядер процессора. Для скорости доступа разделим на два шарда.
-| Регион       | Instance                    | RAM         | CPU         | Storage         |
-| ------------ | --------------------------- | ----------- | ----------- | --------------- |
-| Американский | 2 шарда + 2 реплики на шард | 32 Гб       |  8 cores    | 64 Гб NVMe      |
-| Европейский  | 2 шарда + 2 реплики на шард | 32 Гб       |  8 cores    | 64 Гб NVMe      |
+The average session storage size that was calculated earlier = 2.25 Gb. Average number of RPS ~ 8500. 8 processor cores are enough for this. For access speed, we will divide it into two shards.
+
+| Region   | Instance                    | RAM   | CPU     | Storage    |
+|----------|-----------------------------|-------|---------|------------|
+| American | 2 шарда + 2 реплики на шард | 32 Gb | 8 cores | 64 Gb NVMe |
+| European | 2 шарда + 2 реплики на шард | 32 Gb | 8 cores | 64 Gb NVMe |
+
 #### Nginx (L7 balancer)
 Так как фронтенд будет раздаваться с CDN, будет достаточно 64 ГБ NVMe. Для скорости доступа расположим nginx в каждом регионе.
-| Регион       | Instance                      | RAM         | CPU         | Storage         |
-| ------------ | ----------------------------- | ----------- | ----------- | --------------- |
-| Американский | 3 основных + 3 дополнительных | 32 Гб       |  24 cores   | 64 Гб NVMe      |
-| Европейский  | 3 основных + 3 дополнительных | 32 Гб       |  24 cores   | 64 Гб NVMe      |
-| Африканский  | 3 основных + 3 дополнительных | 32 Гб       |  24 cores   | 64 Гб NVMe      |
-| Азиатский    | 3 основных + 3 дополнительных | 32 Гб       |  24 cores   | 64 Гб NVMe      |
-#### L4 Postgres balancer
-Расположим балансеры в тех же регионах, что и сами сервера с Postgres.
-| Регион       | Instance                      | RAM         | CPU         | Storage         |
-| ------------ | ----------------------------- | ----------- | ----------- | --------------- |
-| Американский | 1 основных + 2 дополнительных | 32 Гб       |  24 cores   | 64 Гб NVMe      |
-| Европейский  | 1 основных + 2 дополнительных | 32 Гб       |  24 cores   | 64 Гб NVMe      |
-#### L4 Redis balancer
-Так как кол-во RPS к Redis почти в 2 раза меньше, чем к Postgres, можем уменьшить кол-во ядер до 16.
-| Регион       | Instance                      | RAM         | CPU         | Storage         |
-| ------------ | ----------------------------- | ----------- | ----------- | --------------- |
-| Американский | 1 основных + 2 дополнительных | 32 Гб       |  16 cores   | 64 Гб NVMe      |
-| Европейский  | 1 основных + 2 дополнительных | 32 Гб       |  16 cores   | 64 Гб NVMe      |
 
-## Используемые источники
+| Region   | Instance                      | RAM   | CPU      | Storage    |
+|----------|-------------------------------|-------|----------|------------|
+| American | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+| European | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+| African  | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+| Asiatic  | 3 основных + 3 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+
+#### L4 Postgres balancer
+Let's place the balancers in the same regions as the Postgres servers themselves.
+
+| Region   | Instance                      | RAM   | CPU      | Storage    |
+|----------|-------------------------------|-------|----------|------------|
+| American | 1 основных + 2 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+| European | 1 основных + 2 дополнительных | 32 Gb | 24 cores | 64 Gb NVMe |
+
+#### L4 Redis balancer
+Since the number of RPS for Redis is almost 2 times less than for Postgres, we can reduce the number of cores to 16.
+
+| Region   | Instance                      | RAM   | CPU      | Storage    |
+|----------|-------------------------------|-------|----------|------------|
+| American | 1 основных + 2 дополнительных | 32 Gb | 16 cores | 64 Gb NVMe |
+| European | 1 основных + 2 дополнительных | 32 Gb | 16 cores | 64 Gb NVMe |
+
+## Sources
 - https://octoverse.github.com/
 - https://octoverse.github.com/2019/
 - https://github.blog/2018-11-08-100M-repos/
