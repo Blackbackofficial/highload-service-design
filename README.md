@@ -1,4 +1,4 @@
-# HighLoad github
+# HighLoad GitHub
 ## 1. Topic and target audience
 ### Topic
 GitHub
